@@ -1,29 +1,43 @@
-import { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { bindActionCreators } from '@reduxjs/toolkit';
+import { connect } from 'react-redux';
+import React from 'react';
 import { addNote } from '../../storage/notesSLice';
 import { totalNoteIncrement } from '../../storage/totalNoteSlice';
 import styles from './InputField.module.scss';
 
-function InputField(props) {
-    const [text, setText] = useState('');
-    const dispatch = useDispatch();
-
-    const togleText = (e) => {
-        setText(e.target.value);
+class InputField extends React.Component {
+    constructor(props) {
+        super(props);
+        this.addNote = this.addNote.bind(this);
+        this.togleText = this.togleText.bind(this);
+        this.state = {text: ''}
     }
 
-    const addNotes = () => {
-        dispatch(addNote({text}));
-        dispatch(totalNoteIncrement());
-        setText('');
+    togleText(e) {
+        this.setState({text: e.target.value});
     }
 
-    return(
-        <div className={styles.container}>
-            <input type='text' value={text} onChange={togleText}/>
-            <button onClick={addNotes}>Add note</button>
-        </div>
-    );
+    addNote() {
+        const addNote = this.props.actionAddNote;
+        this.props.actionTotalNoteIncrement();
+        addNote({text: this.state.text});
+        this.setState({text: ''});
+    }
+
+    render() {
+        return(
+            <div className={styles.container}>
+                <input type='text' value={this.state.text} onChange={this.togleText}/>
+                <button onClick={this.addNote}>Add note</button>
+            </div>
+        );
+    }
 }
 
-export default InputField;
+const mapDispatchToProps = (dispatch) => {
+    return {
+    actionAddNote: bindActionCreators(addNote, dispatch),
+    actionTotalNoteIncrement: bindActionCreators(totalNoteIncrement, dispatch)
+}};
+
+export default connect(null, mapDispatchToProps)(InputField);

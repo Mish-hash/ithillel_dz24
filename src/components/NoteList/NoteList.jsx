@@ -1,17 +1,27 @@
-import { useSelector } from 'react-redux';
+import React from 'react';
+import { connect } from 'react-redux';
 import styles from './NoteList.module.scss';
 
-function NoteList() {
+class NoteList extends React.Component {
 
-    const notes = useSelector(state => state.notes);
+    constructor(props) {
+        super()
+    }
 
-    return(
+    render() {
+        return(
         <div >
             <ul className={styles.container}>
-                {notes.map(el => <li key={`note_${el.id}`}>{el.text}</li>)}
+                {this.props.notes.map(el => <li key={`note_${el.id}`}>{el.text}</li>)}
             </ul>
         </div>
     );
+    }
+
 }
 
-export default NoteList;
+const mapStateToProps = (state) => ({
+    notes: state.notes
+});
+
+export default connect(mapStateToProps, null)(NoteList);
